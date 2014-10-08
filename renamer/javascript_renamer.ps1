@@ -1,33 +1,32 @@
-# renommer l'ensemble des fichiers js 
-# afin qu'il soit correctement importé lors du build
+# rename all js files 
 
 # extension
 $extensionToCtrl = ".js"
-# caractères que l'on veut modifier
+# the char that you to change
 $charToChange = '.'
-# caractères que l'on veut
+# replacement char
 $charChange = '-'
-# profondeur
+# depth
 $depth = 3
 
 #
-# définition de la fonction
+# Renamer
 #
-function RenameJavascriptFiles($folder)
+function RenameFiles($folder)
 {
     if($depth -ne 0) {
         # 
         $depth = $depth - 1
 
-        # recupération de tous les fichiers/dossiers du dossier passé en param
+        # get all files/folder from current folder
         $items = Get-ChildItem($folder)
         foreach ($item in $items) 
         {
-            # si c'est encore un dossier => récursive
+            # if already a folder => recursive
             if($item.Attributes -eq "Directory")
             {
                 echo "----- Subfolder " $item.name
-                # recursivité
+                # recursive
                 RenameJavascriptFiles($item.FullName)
             }
 
@@ -35,15 +34,15 @@ function RenameJavascriptFiles($folder)
             $extension = [System.IO.Path]::GetExtension($item);
             if($extension -eq $extensionToCtrl) 
             {
-                # recuperation du nom du fichier
+                # get filename
                 $filename = $item.name
-                # suppression de l'extension
+                # delete extension part
                 $filename = $filename.replace($extensionToCtrl, "")
-                # replacement des caractères souhaités
+                # replace char(s)
                 $filename = $filename.replace($charToChange, $charChange)
-                # remise en place de l'extension
+                # re-add extension
                 $filename = $filename + $extensionToCtrl
-                # on renome en précisant bien le chemin complet via 'FullName'
+                # rename white the full path thanks to 'FullName'
                 Rename-Item -path $item.FullName -NewName $filename
 
                 echo "----- File " $item.name " rename to " $filename
@@ -56,7 +55,7 @@ function RenameJavascriptFiles($folder)
 # Execution
 #
 
-# recuperation du path du répertoire courrant
+# current directory location
 $currentDir = Get-Location
-#utilisation de la fonction définie préalablement
-RenameJavascriptFiles($currentDir)
+# use fonction
+RenameFiles($currentDir)
